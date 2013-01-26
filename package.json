@@ -1,13 +1,13 @@
 {
   "name": "bowl",
   "description": "Multi process manager for Node.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Yoshimasa Wakahara <y.wakahara@gmail.com>",
   "license": "MIT-License",
   "keywords": ["cluster", "process", "cli"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/waka/bowl.git"
+    "url": "https://github.com/waka/node-bowl.git"
   },
   "main": "./index",
   "bin": {
