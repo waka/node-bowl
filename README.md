@@ -39,7 +39,7 @@ var bowl = new Bowl({
   plugins: ['plugins/foo.js', 'plugins/bar.js']
 });
 
-bowl.start(function(err) {
+bowl.run(function(err) {
   console.log('Bowl has started');
 });
 ```
