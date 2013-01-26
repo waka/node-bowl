@@ -1,0 +1,153 @@
+#!/usr/bin/env node
+
+'use strict';
+
+
+/**
+ * Module dependencies.
+ */
+
+var fs = require('fs');
+var path = require('path');
+var program = require('commander');
+var Bowl = require('../lib/bowl');
+var _ = require('../lib/utility');
+
+
+/**
+ * Utilities.
+ */
+
+var options = ['forks', 'watch', 'lifetime', 'plugins',
+               'pidfile', 'loglevel', 'logdir'];
+
+function list(val) {
+  return val.split(',');
+}
+
+function setValue(target, source, key) {
+  if (!source.hasOwnProperty(key)) {
+    return;
+  }
+  var value = source[key];
+  if (value !== null || typeof value !== 'undefined') {
+    target[key] = value;
+  }
+}
+
+
+/**
+ * Build command line options.
+ */
+
+program
+  .version(Bowl.version)
+  .usage('<file> [options]')
+  .option('-c, --configure <file>',
+          'config file. The other option is not required if used')
+  .option('-f, --forks <n>',
+          'number or workers to fork', parseInt)
+  .option('-w, --watch <dirs|files>',
+          'directories and files for hot deploy', list)
+  .option('-t, --lifetime <n>',
+          'lifetime of the worker from becoming disconnect', parseInt)
+  .option('--plugins <files>',
+          'scripts to be injected into the Bowl object', list)
+  .option('--pidfile <file>',
+          'the pid file')
+  .option('--loglevel <level>',
+          'output log level [debug|info|notice|warning|error]')
+  .option('--logdir <dir>',
+          'directory to output log');
+
+
+/**
+ * Banner of help.
+ */
+
+program.on('--help', function() {
+  console.log('');
+  console.log('  The default values:');
+  console.log('');
+  console.log('    -f, --forks    : number of CPU on this machine');
+  console.log('    -w, --watch    : . (=current directory)');
+  console.log('    -t, --lifetime : 3000 (ms)');
+  console.log('    --plugins      :');
+  console.log('    --pidfile      : ./bowl.pid');
+  console.log('    --loglevel     : info');
+  console.log('    --logdir       : . (=current directory)');
+  console.log('');
+  console.log('  The example:');
+  console.log('');
+  console.log('    % bowl app.js -f 2 -w app,lib,index.js -t 1000 --plugins plugings/foo.js,plugins/bar.js --pidfile tmp/app.pid --loglevel notice --logdir log');
+  console.log('      or');
+  console.log('    % bowl app.js -c config.js');
+  console.log('');
+  console.log('  The example of config file (using JSON as format):');
+  console.log('');
+  console.log('    {');
+  console.log('      forks    : 2,');
+  console.log('      watch    : ["app", "lib", "index.js"],');
+  console.log('      lifetime : 1000,');
+  console.log('      plugins  : ["plugins/foo.js", "plugins/bar.js"],');
+  console.log('      pidfile  : "tmp/app.pid",');
+  console.log('      loglevel : "notice",');
+  console.log('      logdir   : "log"');
+  console.log('    }');
+  console.log('');
+});
+
+
+/**
+ * Get options!
+ */
+
+program.parse(process.argv);
+
+if (!program.args.length) {
+  console.log('  The execution script is required.');
+  program.help();
+  process.exit(0);
+}
+
+var config = {
+  exec: program.args[0]
+};
+
+if (!fs.existsSync(config.exec)) {
+  console.log('  Execution script does not exist: %s', config.exec);
+  process.exit(1);
+}
+
+
+/**
+ * Initialize configrations.
+ */
+
+var configure = program.configure;
+if (configure) {
+  if (!fs.existsSync(configure)) {
+    console.log('  The configure file does not exists: %s', configure);
+    process.exit(1);
+  }
+  try {
+    var specifyConfig = JSON.parse(fs.readFileSync(
+      path.join(process.cwd(), configure), 'utf8'));
+    config = _.extend(config, specifyConfig);
+  } catch(err) {
+    console.log('  The configure file is invalid JSON: %s', configure);
+    process.exit(1);
+  }
+} else {
+  options.forEach(function(option) {
+    setValue(config, program, option);
+  });
+}
+
+
+/**
+ * Start bowl.
+ */
+
+var bowl = new Bowl(config);
+bowl.run();

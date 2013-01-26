@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+
+*.pid
+*.log
+sample
+
+.git
+.gitignore
+.travis.yml
+
+*~
+._*
+*.swp
+Thumbs.db
+.DS_Store

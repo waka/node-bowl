@@ -1,0 +1,28 @@
+{
+  "name": "bowl",
+  "description": "Multi process manager for Node.js",
+  "version": "0.1.0",
+  "author": "Yoshimasa Wakahara <y.wakahara@gmail.com>",
+  "license": "MIT-License",
+  "keywords": ["cluster", "process", "cli"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/waka/bowl.git"
+  },
+  "main": "./index",
+  "bin": {
+    "node-bowl": "./bin/bowl",
+    "bowl": "./bin/bowl"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "engines": "0.8.x",
+  "dependencies": {
+    "commander": ">=1.1.1",
+    "winston": "0.6.x"
+  },
+  "devDependencies": {
+    "mocha": ">= 1.8.1"
+  }
+}
