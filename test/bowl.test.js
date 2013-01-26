@@ -24,7 +24,12 @@ describe('bowl', function() {
   var bowl = null;
   var worker = path.join(global.dir.fixtures, 'worker.js');
   var plugin = path.join(global.dir.fixtures, 'plugin.js');
-
+  var config = {
+    exec: worker,
+    forks: 1,
+    plugins: [plugin],
+    pidfile: null
+  };
 
   beforeEach(function(done) {
     done();
@@ -40,7 +45,7 @@ describe('bowl', function() {
 
 
   it('Smoke test (start and shutdown)', function(done) {
-    bowl = new Bowl({exec: worker}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.run(function(err) {
       if (err) {
         assert(false, 'Failed to start workers');
@@ -55,7 +60,7 @@ describe('bowl', function() {
   });
 
   it('Restart', function(done) {
-    bowl = new Bowl({exec: worker}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.on('restart', function(evt) {
       bowl.stop(function() {
         process.nextTick(function() {
@@ -74,7 +79,7 @@ describe('bowl', function() {
   });
 
   it('Restart gracefully', function(done) {
-    bowl = new Bowl({exec: worker}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.on('restart', function(evt) {
       bowl.stop(function() {
         process.nextTick(function() {
@@ -93,7 +98,7 @@ describe('bowl', function() {
   });
 
   it('Restart worker if killed', function(done) {
-    bowl = new Bowl({exec: worker}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.on('worker.respawn', function(evt) {
       bowl.stop(function() {
         process.nextTick(function() {
@@ -115,7 +120,7 @@ describe('bowl', function() {
   });
 
   it('Handle SIGUSR2 signal', function(done) {
-    bowl = new Bowl({exec: worker}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.on('restart', function(evt) {
       bowl.stop(function() {
         process.nextTick(function() {
@@ -134,7 +139,7 @@ describe('bowl', function() {
   });
 
   it('Mixin plugins', function(done) {
-    bowl = new Bowl({exec: worker, plugins: [plugin]}, mockLogger);
+    bowl = new Bowl(config, mockLogger);
     bowl.on('plugin.included', function(evt) {
       bowl.on('start', function(evt) {
         bowl.stop(function() {
