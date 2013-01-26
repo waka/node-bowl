@@ -8,6 +8,14 @@ In addition, it is also possible to hot deploy detecting a change in the directo
 
 ## Usage
 
+### Install
+
+You can also install from [npm](https://npmjs.org/).
+
+```sh
+npm install -g bowl
+```
+
 ### By CLI
 
 Please see help.
