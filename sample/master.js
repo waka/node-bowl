@@ -1,5 +1,5 @@
 //
-var Bowl = require('../lib/saucer.js');
+var Bowl = require('../lib/bowl');
 
 var bowl = new Bowl({
   exec: 'sample/worker.js',
